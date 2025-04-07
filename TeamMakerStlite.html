@@ -64,7 +64,7 @@ about=chr(10).join([
 '+ The code for the app can be easily customized to fit your needs:  ',
 'Look for <DEFAULTS> and <OVERRIDES> to find the default settings section and customize default values.  ',
 '+ You may define a function def post_process_data(df:pd.DataFrame): -> pd.DataFrame to prepare your data. ',
-'The default post_process_data does nothing.'
+'The default post_process_data does nothing.  '
 "##### Have fun!  ",
 "(c) Yves Le Feuvre  "
 ])
@@ -83,6 +83,8 @@ default_colors=colors={1:"darkred",2:"darkorange",3:"darkgreen",4:"darkcyan",5:"
 default_url="https://docs.google.com/spreadsheets/d/xxxxxxx-xxxx-xxxxxxxx_xxxxxxxxxxxxxxxx-xxxxx/export?format=csv&gid=0"
 
 def post_process_data(df):
+	## example: df["rank"]=df['uid'].str[-1];df["gender"]=df['uid'].str[-2]
+ 	## this enables to hide gender and rank in uid column uid="uid_45697810", for politically correct reasons
 	return df
 ## </DEFAULT> End of default section
 
