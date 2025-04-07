@@ -35,7 +35,9 @@ about=chr(10).join([
 "The _'*.csv'_ should be structured like as follow:  ",
 "| name |rank|gender|(...)|dd/mm|dd/mm|  ",
 "|------|----|------|-----|-----|-----|  ",
-"|Peter | 1  | m,f  | any | Yes | No  |  ",
+"|Alice | 1  | f    | any | Yes | No  |  ",
+"|Bob   | 1  | m    | any | No  | No  |  ",
+"|Charlie| 1 | m    | any | Yes | Yes |  ",
 "  ",
 "where:  ",
 "+ name is the first or last name, or any player identifier  ",
@@ -66,7 +68,7 @@ about=chr(10).join([
 '+ You may define a function def post_process_data(df:pd.DataFrame): -> pd.DataFrame to prepare your data. ',
 'The default post_process_data does nothing.  '
 "##### Have fun!  ",
-"(c) Yves Le Feuvre  "
+"(c) Yves33  "
 ])
 ## challenge: keep code below 100 lines and readable (excluding data, obviously)
 ## IMPORT SECTION
