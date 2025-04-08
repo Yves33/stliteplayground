@@ -32,12 +32,12 @@ about=chr(10).join([
 "##### Team Editor  ",
 "Powered by Streamlit stlite {st__version__}.  ",
 "**TeamEditor** is a simple app designed to make balanced teams from uploaded _'*.csv'_ files.  ",
-"The _'*.csv'_ should be structured like as follow:  ",
+"The _'*.csv'_ should be structured as follow:  ",
 "| name |rank|gender|(...)|dd/mm|dd/mm|  ",
 "|------|----|------|-----|-----|-----|  ",
 "|Alice | 1  | f    | any | Yes | No  |  ",
-"|Bob   | 1  | m    | any | No  | No  |  ",
-"|Charlie| 1 | m    | any | Yes | Yes |  ",
+"|Bob   | 1  | m    | any | No  | Yes  |  ",
+"|Charlie | 1  | m    | any | Yes | Yes  |  ",
 "  ",
 "where:  ",
 "+ name is the first or last name, or any player identifier  ",
@@ -60,13 +60,17 @@ about=chr(10).join([
 "+ Finally, use the **Teams** tab to select the number of teams.  ",
 "  + Gender balancing is optionnal.  ",
 "  + You can colorize players by ranks, although the results may be a disaster in _Dark theme_.  ",
-"  + Generate new teams by changing one of the params (usually gender balance or colorize.  ",
+"  + Generate new teams by changing one of the params (usually gender balance or colorize).  ",
 "  ",
 "##### Customizing  ",
-'+ The code for the app can be easily customized to fit your needs:  ',
-'Look for <DEFAULTS> and <OVERRIDES> to find the default settings section and customize default values.  ',
-'+ You may define a function def post_process_data(df:pd.DataFrame): -> pd.DataFrame to prepare your data. ',
-'The default post_process_data does nothing.  '
+"+ The code for the app can be easily customized to fit your needs:  ",
+"Look for <DEFAULTS> and <OVERRIDES> to find the default settings section and customize default values.  ",
+"+ You may define a function def post_process_data(df:pd.DataFrame): -> pd.DataFrame to prepare your data. ",
+"The default post_process_data does nothing.  "
+"  ",
+"##### Todo",
+"+ Download directly google sheet. Not feasible at present time due to CORS  ",
+"+ Read directly google sheet through gspread.  ",
 "##### Have fun!  ",
 "(c) Yves33  "
 ])
@@ -85,10 +89,15 @@ default_colors=colors={1:"darkred",2:"darkorange",3:"darkgreen",4:"darkcyan",5:"
 default_url="https://docs.google.com/spreadsheets/d/xxxxxxx-xxxx-xxxxxxxx_xxxxxxxxxxxxxxxx-xxxxx/export?format=csv&gid=0"
 
 def post_process_data(df):
-	## example: df["rank"]=df['uid'].str[-1];df["gender"]=df['uid'].str[-2]
- 	## this enables to hide gender and rank in uid column uid="uid_45697810", for politically correct reasons
 	return df
 ## </DEFAULT> End of default section
+
+## <OVERRIDES> this section optionnally overrides default parameters
+## default_options=['y','n']
+## def post_process_data(df):
+##	df["rank"]=...
+##	return df
+## <∕OVERRIDES>
 
 def quick_teams_(presents,n_teams, gender_balance):
 	""" presents: DataFrame with columns "rank","genre" and indes "Prénom"
@@ -110,7 +119,7 @@ def quick_teams_(presents,n_teams, gender_balance):
 					.set_axis([f"p{i+1}" for i in range(teams.shape[1])], axis=1)
 
 def highlight(s):
-	return [f'color: {colors[players_today[k_rank][e]]};'if e!='x' else 'color: black;' for e in s]
+	return [f'color: {colors[players[k_rank][e]]};'if e!='x' else 'color: black;' for e in s]
 
 ## __main__ in streamlit, the entire script is rerun each time an element changes
 members=None
@@ -140,8 +149,11 @@ with tab_inet:
 with tab_players:
 	if not members is None:
 		dates=[c for c in members.columns if "/" in c]
-		date=st.selectbox("Pick date",dates,index=0)
-		players_today = st.data_editor(members.assign(Today=lambda df:df[date]==default_options[0])[["Today",k_rank,k_gender]], 
+		date=st.selectbox("Pick date",dates,index=0,on_change=lambda *args: st.session_state.pop("0xPILLWIDGET",None))
+		members=members.assign(Today=lambda df:df[date]==v_positive)[["Today",k_rank,k_gender]]
+		if "0xPILLWIDGET" in st.session_state.keys():
+			members["Today"]=members.index.isin(st.session_state["0xPILLWIDGET"])
+		players = st.data_editor(members, 
 										column_config={	k_name:st.column_config.TextColumn(k_name,default=default_new_player[0]),
 														"Today":st.column_config.CheckboxColumn("Today",width="small", default=True),
 														k_rank:st.column_config.SelectboxColumn(k_rank,options=[1,2,3,4,5],default=default_new_player[1]),
@@ -155,13 +167,14 @@ with tab_players:
 with tab_pills:  ## easier to handle than checkboxes in data_editor
 	if not members is None:
 		present=st.pills("Select players",
-				options=sorted(players_today.index.to_list()),
-				default=players_today[players_today["Today"]].index.to_list(),
+				options=sorted(players.index.to_list()),
+				default=players[players["Today"]].index.to_list(),
+				key="0xPILLWIDGET",
 				selection_mode="multi")
-		players_today["Today"]=players_today.index.isin(present)
-		n_players=len(players_today[players_today["Today"]])
-		n_girls=(len(players_today[(players_today[k_gender]=='f') & players_today["Today"]]))
-		n_boys=(len(players_today[(players_today[k_gender]=='m') & players_today["Today"]]))
+		players["Today"]=players.index.isin(present)
+		n_players=len(players[players["Today"]])
+		n_girls=(len(players[(players[k_gender]=='f') & players["Today"]]))
+		n_boys=(len(players[(players[k_gender]=='m') & players["Today"]]))
 		st.markdown(f"**Players**: {n_players}{'&nbsp;'*10}**Men** : :blue[{n_boys}]{'&nbsp;'*10}**Women** : :green[{n_girls}]")
 with tab_teams:
 	if not members is None:
@@ -171,7 +184,7 @@ with tab_teams:
 		with c2:
 			gender_balance=st.checkbox("Gender balance")
 			colorize=st.checkbox("Colorize")
-		teams_df=quick_teams_(players_today[players_today["Today"]],n_teams,gender_balance)
+		teams_df=quick_teams_(players[players["Today"]],n_teams,gender_balance)
 		if colorize:
 			st.dataframe(teams_df.style.apply(highlight),use_container_width=True)
 		else:
