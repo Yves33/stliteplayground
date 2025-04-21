@@ -19,7 +19,7 @@
       import * as stlite from "https://cdn.jsdelivr.net/npm/@stlite/browser/build/stlite.js";
       stlite.mount(
 						{
-								requirements: ["pandas", "matplotlib"],
+								requirements: ["pandas", "matplotlib","streamlit-sortables"],
 								entrypoint: "main.py",
 								files: {
 "main.py": `
@@ -125,7 +125,7 @@ def highlight(s):
 members=None
 
 st.header("TeamMaker")
-tab_inet,tab_players,tab_pills,tab_teams, tab_about=st.tabs(["Data","Members","Quick select","Teams","About"])
+tab_inet,tab_players,tab_pills,tab_teams,tab_tune,tab_about=st.tabs(["Data","Members","Quick select","Teams","Tune","About"])
 with tab_inet:
 	url=st.text_input("Data sheet url",default_url)
 	st.page_link(url, label="Download data sheet", icon="🌎")
@@ -189,6 +189,18 @@ with tab_teams:
 			st.dataframe(teams_df.style.apply(highlight),use_container_width=True)
 		else:
 			st.dataframe(teams_df,use_container_width=True)
+with tab_tune:
+	try:
+		from streamlit_sortables import sort_items
+		with st.form(key="0xFINETUNE"):
+			original_items = []
+			for i in range(1,n_teams+1):
+				l=[i for i in teams_df.iloc[i-1].to_list() if i!='x']
+				original_items.append({"header":f"Team {i}", "items":l} )
+			sorted_items = sort_items(original_items,multi_containers=True)
+			shuffle=st.form_submit_button('Shuffle')
+	except:
+		st.write("Module not found: streamlit-sortables")
 with tab_about:
 	st.markdown(about.replace("{st__version__}",st.__version__))
 ###########################
