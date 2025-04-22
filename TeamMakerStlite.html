@@ -1,81 +1,75 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <title>Stlite App</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@stlite/browser/build/style.css"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module">
-      import * as stlite from "https://cdn.jsdelivr.net/npm/@stlite/browser/build/stlite.js";
-      stlite.mount(
-						{
-								requirements: ["pandas", "matplotlib","streamlit-sortables"],
-								entrypoint: "main.py",
-								files: {
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		<title>Stlite App</title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser/build/style.css" />
+	</head>
+	<body>
+		<div id="root"></div>
+		<script type="module">
+import * as stlite from "https://cdn.jsdelivr.net/npm/@stlite/browser/build/stlite.js";
+stlite.mount({
+			requirements: ["pandas", "matplotlib","streamlit-sortables"],
+			entrypoint: "main.py",
+			files: {
 "main.py": `
 #########################
 ## python code starts here
 ## TODO: store/restore column values in cookies
 #########################
 ## about text. markdown has to be splitted
-about=chr(10).join([
-"##### Team Editor  ",
-"Powered by Streamlit stlite {st__version__}.  ",
-"**TeamEditor** is a simple app designed to make balanced teams from uploaded _'*.csv'_ files.  ",
-"The _'*.csv'_ should be structured as follow:  ",
-"| name |rank|gender|(...)|dd/mm|dd/mm|  ",
-"|------|----|------|-----|-----|-----|  ",
-"|Alice | 1  | f    | any | Yes | No  |  ",
-"|Bob   | 1  | m    | any | No  | Yes  |  ",
-"|Charlie | 1  | m    | any | Yes | Yes  |  ",
-"  ",
-"where:  ",
-"+ name is the first or last name, or any player identifier  ",
-"+ rank is the skill (1=above average, 2=average, 3=below average,...)  ",
-"+ gender is the person gender (either 'm' or 'f')  ",
-"  ",
-"*NB*: The column names are not hardcoded and may be selected from Data tab  ",
-"*NB*: up to 5 ranks can be assigned.  ",
-"##### Usage  ",
-"+ Use **Data** tab to select appropriate _'*.csv'_ file.  ",
-"  + Optional: paste the address of the _'*.csv'_ file (for google sheet you should replace _'edit?gid=0'_ with _'export?format=csv&gid=0'_). ",
-"  + Optional: press _Download_ button below to directly download from provided url (may not work with chrome). ",
-"  + Use the upload widget to upload appropriate _'*.csv'_ file.",
-"  + Use the selectbox widget to select appropriate keys for name,rank and gender.  ",
-"+ Use **Members** tab to select date and view players present on that date.  ",
-"  + You can _change_ all values, _add_ or _remove_ members in the table.  ",
-"  + Changes are lost upon app/table reload.  ",
-"+ Alternatively, use the **Quick select** tab to select players present on selected date (redundant with previous step).  ",
-"  + The _metrics_ cards diplay some info regarding number of players and gender balance.  ",
-"+ Finally, use the **Teams** tab to select the number of teams.  ",
-"  + Gender balancing is optionnal.  ",
-"  + You can colorize players by ranks, although the results may be a disaster in _Dark theme_.  ",
-"  + Generate new teams by changing one of the params (usually gender balance or colorize).  ",
-"+ Optionnaly, use the **Tune** tab to manually refine the teams.  ",
-"  + Changes are not (yet) back-propagated to team tab.  ",
-"  ",
-"##### Customizing  ",
-"+ The code for the app can be easily customized to fit your needs:  ",
-"Look for <DEFAULTS> and <OVERRIDES> to find the default settings section and customize default values.  ",
-"+ You may define a function def post_process_data(df:pd.DataFrame): -> pd.DataFrame to prepare your data. ",
-"The default post_process_data does nothing.  "
-"  ",
-"##### Todo",
-"+ Download directly google sheet. Not feasible at present time due to CORS  ",
-"+ Read directly google sheet through gspread.  ",
-"##### Have fun!  ",
-"(c) Yves33  "
-])
+about="""##### Team Editor  
+Powered by Streamlit stlite {st__version__}.  
+**TeamEditor** is a simple app designed to make balanced teams from uploaded _'*.csv'_ files.  
+The _'*.csv'_ should be structured as follow:  
+| name |rank|gender|(...)|dd/mm|dd/mm|  
+|------|----|------|-----|-----|-----|  
+|Alice | 1  | f    | any | Yes | No  |  
+|Bob   | 1  | m    | any | No  | Yes |  
+|Carol | 2  | f    | any | Yes | Yes |  
+|Dave  | 3  | m    | any | No  | Yes |  
+  
+where:  
++ name is the first or last name, or any player identifier  
++ rank is the skill (1=above average, 2=average, 3=below average,...)  
++ gender is the person gender (either 'm' or 'f')  
+  
+*NB*: The column names are not hardcoded and may be selected from Data tab  
+*NB*: up to 5 ranks can be assigned.  
+##### Usage  
++ Use **Data** tab to select appropriate _'*.csv'_ file.  
+  + Optional: paste the address of the _'*.csv'_ file (for google sheet you should replace _'edit?gid=0'_ with _'export?format=csv&gid=0'_). ,
+  + Optional: press _Download_ button below to directly download from provided url (may not work with chrome). ,
+  + Use the upload widget to upload appropriate _'*.csv'_ file.,
+  + Use the selectbox widget to select appropriate keys for name, rank and gender.  
++ Use **Members** tab to select date and view players present on that date.  
+  + You can _change_ all values, _add_ or _remove_ members in the table.  
+  + Changes are lost upon app/table reload.  
++ Alternatively, use the **Quick select** tab to select players present on selected date (redundant with previous step).  
+  + The _metrics_ cards diplay some info regarding number of players and gender balance.  
++ Finally, use the **Teams** tab to select the number of teams.  
+  + Gender balancing is optionnal.  
+  + You can colorize players by ranks, although the results may be a disaster in _Dark theme_.  
+  + Generate new teams by changing one of the params (usually gender balance or colorize).  
++ Optionnaly, use the **Tune** tab to manually refine the teams.  
+  + Use drag & drop to rearrange teams.  
+  + Use shuffle button to re-shuffle teams.  
+  + Changes are not (yet) back-propagated to **Teams** tab.  
+  
+##### Customizing  
++ The code for the app can be easily customized to fit your needs:  
+Look for <DEFAULTS> and <OVERRIDES> to find the default settings section and customize default values.  
++ You may define a function def post_process_data(df:pd.DataFrame): -> pd.DataFrame to prepare your data. ,
+The default post_process_data does nothing.  
+  
+##### Todo,
++ Download directly google sheet. Not feasible at present time due to CORS  
++ Read directly google sheet through gspread (same issue?).  
+##### Have fun!  
+(c) Yves33"""
 ## challenge: keep code below 100 lines and readable (excluding data, obviously)
 ## IMPORT SECTION
 import pandas as pd
@@ -102,9 +96,10 @@ def post_process_data(df):
 ## <∕OVERRIDES>
 
 def quick_teams_(presents,n_teams, gender_balance):
-	""" presents: DataFrame with columns "rank","genre" and indes "Prénom"
+	""" presents: pd.DataFrame with columns "rank","genre"; index is used as player identifier
 		n_teams: the number of teams to generate
 		gender_balance: process males and females separately
+		the algorithm works if there are many ties (ex aequo) in ranks
 	"""
 	if not gender_balance:
 		shuffled=presents[k_rank].sample(frac=1).sort_values().index.to_list()
@@ -115,7 +110,6 @@ def quick_teams_(presents,n_teams, gender_balance):
 		teams=pd.concat([pd.DataFrame( [ boys[i::n_teams] for i in range(n_teams) ]),
 						 pd.DataFrame( [ girls[i::n_teams] for i in range(n_teams) ]).iloc[::-1].reset_index(drop=True) ],
 						axis=1)
-	## prettyfy output
 	return  teams.replace({None:'x'}) \
 					.set_index([[f"Team_{i+1}" for i in range(n_teams)]] ) \
 					.set_axis([f"p{i+1}" for i in range(teams.shape[1])], axis=1)
@@ -125,9 +119,8 @@ def highlight(s):
 
 ## __main__ in streamlit, the entire script is rerun each time an element changes
 members=None
-
 st.header("TeamMaker")
-tab_inet,tab_players,tab_pills,tab_teams,tab_tune,tab_about=st.tabs(["Data","Members","Quick select","Teams","Tune","About"])
+tab_inet,tab_players,tab_pills,tab_teams,tab_tune,tab_about=st.tabs(["📂Data","📅Members","🔍Quick select","📌Teams","🏐Tune","💬About"])
 with tab_inet:
 	url=st.text_input("Data sheet url",default_url)
 	st.page_link(url, label="Download data sheet", icon="🌎")
@@ -192,37 +185,38 @@ with tab_teams:
 		else:
 			st.dataframe(teams_df,use_container_width=True)
 with tab_tune:
-	try:
-		from streamlit_sortables import sort_items
-		with st.form(key="0xFINETUNE"):
-			original_items = []
-			for i in range(1,n_teams+1):
-				l=[i for i in teams_df.iloc[i-1].to_list() if i!='x']
-				original_items.append({"header":f"Team {i}", "items":l} )
-			sorted_items = sort_items(original_items,multi_containers=True)
-			shuffle=st.form_submit_button('Shuffle')
-	except:
-		st.write("Module not found: streamlit-sortables")
+	if not members is None:
+		try:
+			from streamlit_sortables import sort_items
+			with st.form(key="0xFINETUNE"): ## embedding in form prevents app rerun
+				original_items = []
+				for i in range(1,n_teams+1):
+					l=[i for i in teams_df.iloc[i-1].to_list() if i!='x']
+					original_items.append({"header":f"Team {i}", "items":l} )
+				sorted_items = sort_items(original_items,multi_containers=True)
+				shuffle=st.form_submit_button('Shuffle')
+		except:
+			st.write("Module not found: streamlit-sortables")
 with tab_about:
 	st.markdown(about.replace("{st__version__}",st.__version__))
 ###########################
 #### python code stops here
 ###########################
 `
-										},
-		streamlitConfig: {
-			// Streamlit configuration
-			"client.toolbarMode": "auto",
-			"theme.base":"light",
-			"theme.primaryColor": "#063366",
-			//"theme.secondaryColor": "#0A3366"
-			"theme.backgroundColor":"#FFFFFF",
-			//"theme.secondaryBackgroundColor":"#DDDDDD",
-			//"theme.textColor"="#000000",
-			//"theme.font"="serif"
+				},
+			streamlitConfig: {
+				// Streamlit configuration
+				"client.toolbarMode": "auto",
+				"theme.base":"light",
+				"theme.primaryColor": "#063366",
+				//"theme.secondaryColor": "#0A3366"
+				"theme.backgroundColor":"#FFFFFF",
+				//"theme.secondaryBackgroundColor":"#DDDDDD",
+				//"theme.textColor"="#000000",
+				//"theme.font"="serif"
+				},
 			},
-						},
-					 document.getElementById("root"));
-			 </script>
-	 </body>
-	 </html>
+		document.getElementById("root"));
+		</script>
+	</body>
+</html>
